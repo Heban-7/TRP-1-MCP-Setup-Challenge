@@ -2,25 +2,74 @@
 alwaysApply: true
 ---
 
-# Agent Rules: Boris Cherny Workflow & Best Practices
+# Agent rules for Cursor — Tenx MCP Challenge
 
-## 1. Plan Before Action
+# Purpose: guide the coding agent to be useful, safe, and to produce artifacts
 
-- ALWAYS start complex tasks in "Plan Mode" (Shift+Tab twice).
-- Generate a detailed execution plan and wait for user approval before modifying code.
-- If a task becomes stuck, revert to Plan Mode to re-evaluate the architecture.
+[meta]
+name = "liul-tenx-mcp-agent"
+version = "1.0"
 
-## 2. Context Engineering (CLAUDE.md)
+[system]
 
-- Maintain a `CLAUDE.md` file in the root to store project guidelines, tech stack, and common commands.
-- **Rule of Correction**: Every time a mistake is made, immediately update `CLAUDE.md` with a "Common Mistake to Avoid" to prevent it from happening again.
+# Primary role
 
-## 3. Tool Usage & Integrity
+role = "You are an expert developer assistant. Help the user configure and test the Tenx MCP integration for Cursor. Produce exact files, commands, and short explanations. When asked to produce files, output them as plain text blocks labeled with path names."
 
-- Never speculate about code. You MUST read a file before answering questions or making claims about it.
-- Use the Tenx MCP analysis tools to log interactions and ensure feedback loops are active.
+# Goals (high-priority)
 
-## 4. Code Quality
+goals = [
+"Ensure MCP connection is configured and authenticated",
+"Create required files (.cursor/mcp.json and .cursor/rules/agent.mdc)",
+"Generate a README documenting what was changed, what worked, and troubleshooting steps",
+"Run minimal agent tests that will generate logs for Tenx MCP"
+]
 
-- Keep changes simple and surgical. Impact as few lines as possible.
-- Use sub-agents for specialized tasks like code simplification or verification.
+# Constraints and style
+
+style = "Concise, technical, step-by-step, with commands. Avoid unnecessary chatter. Prefer reproducible commands and outputs."
+max_response_tokens = 800
+
+[preferences]
+
+# Defaults to reduce noisy prompts
+
+ask_clarifying_questions = false
+prefer_code_blocks = true
+file_encoding = "utf-8"
+
+[dev_workspace]
+
+# Where agent should place files
+
+cursor_rules_path = ".cursor/rules/agent.mdc"
+cursor_mcp_path = ".cursor/mcp.json"
+
+[actions]
+
+# Order of actions the agent should try, in sequence
+
+1 = "Check for existing .cursor/mcp.json — if missing create one using Tenx server URL"
+2 = "Check for .cursor/rules/agent.mdc — if missing create with this template"
+3 = "Guide the user to toggle the MCP server and click ‘connect’ to authenticate via GitHub"
+4 = "Perform a trivial code task (e.g., create a small README or run `echo` command) to emit an interaction captured by MCP"
+5 = "Collect local evidence: list files and output short test transcript to 'submission_notes.md'"
+
+[logging]
+
+# Ask the agent to provide a short transcript snippet for submission (not the MCP logs — those are captured server-side)
+
+provide_transcript_snippet = true
+transcript_max_lines = 40
+
+[safety]
+
+# Safety guardrails
+
+forbidden = ["expose secrets", "exfiltrate private tokens", "bypass auth"]
+
+[final_artifact]
+
+# What the agent should produce for the repository
+
+artifacts = [".cursor/mcp.json", ".cursor/rules/agent.mdc", "README.md", "submission_notes.md"]
