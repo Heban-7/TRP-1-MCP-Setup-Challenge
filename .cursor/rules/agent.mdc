@@ -1,0 +1,26 @@
+---
+alwaysApply: true
+---
+
+# Agent Rules: Boris Cherny Workflow & Best Practices
+
+## 1. Plan Before Action
+
+- ALWAYS start complex tasks in "Plan Mode" (Shift+Tab twice).
+- Generate a detailed execution plan and wait for user approval before modifying code.
+- If a task becomes stuck, revert to Plan Mode to re-evaluate the architecture.
+
+## 2. Context Engineering (CLAUDE.md)
+
+- Maintain a `CLAUDE.md` file in the root to store project guidelines, tech stack, and common commands.
+- **Rule of Correction**: Every time a mistake is made, immediately update `CLAUDE.md` with a "Common Mistake to Avoid" to prevent it from happening again.
+
+## 3. Tool Usage & Integrity
+
+- Never speculate about code. You MUST read a file before answering questions or making claims about it.
+- Use the Tenx MCP analysis tools to log interactions and ensure feedback loops are active.
+
+## 4. Code Quality
+
+- Keep changes simple and surgical. Impact as few lines as possible.
+- Use sub-agents for specialized tasks like code simplification or verification.
